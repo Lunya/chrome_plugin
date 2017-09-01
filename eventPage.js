@@ -28,7 +28,6 @@ class PageManager {
 	}
 
 	addActionToScenario(action) {
-		alert('receive msg:'+action);
 		this.scenario.push(action);
 	}
 }
@@ -37,10 +36,7 @@ function webNavigationCommitted({transitionType, url}) {
 	chrome.tabs.query({active: true, currentWindow: true}, activeTabs => {
 		if (transitionType === 'reload' || transitionType === 'start_page') {
 			if (activeTabs.length && activeTabs.length > 0) {
-				//console.log('send msg goto');
-				//chrome.runtime.sendMessage('Goto' + url);
 				pageManager.scenario.push('Goto '+url);
-				alert('send msg goto');
 			}
 		}
 	});  
