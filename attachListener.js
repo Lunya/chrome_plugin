@@ -12,5 +12,4 @@ function handleEvent (e) {
 	chrome.runtime.sendMessage(action + ' ' + e.target);
 }
 
-
 attach();

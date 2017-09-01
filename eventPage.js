@@ -9,6 +9,7 @@ class PageManager {
 	}
 
 	startRecording() {
+		this.scenario = [];
 		this.isRecording = true;
 		chrome.webNavigation.onCommitted.addListener(webNavigationCommitted);
 		chrome.webNavigation.onCompleted.addListener(webNavigationCompleted);
@@ -22,7 +23,6 @@ class PageManager {
 
 	stopRecording() {
 		this.isRecording = false;
-		this.scenario = [];
 		chrome.webNavigation.onCommitted.removeListener(webNavigationCommitted);
 		chrome.webNavigation.onCompleted.removeListener(webNavigationCompleted);
 	}
