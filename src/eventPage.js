@@ -38,7 +38,11 @@ class PageManager {
 			this.stopRecording();
 			break;
 		case 'status': 
-			sendResponse({scenario : this.scenario.toString(), isRecording: this.isRecording});
+			var response = {
+				scenario : this.scenario.toJSON(),
+				isRecording: this.isRecording
+			};
+			sendResponse(response);
 			break;
 		case 'action' : 
 			this.scenario.addAction(watlib.ActionFactory.createAction(msg.action));

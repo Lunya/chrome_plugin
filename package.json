@@ -18,7 +18,7 @@
   },
   "homepage": "https://github.com/webautotester/chrome-plugin#readme",
   "dependencies": {
-    "wat-action": "^1.0.3"
+    "wat-action": "^1.0.4"
   },
   "devDependencies": {
     "copy-webpack-plugin": "^4.0.1",
