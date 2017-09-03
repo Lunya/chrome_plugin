@@ -61,10 +61,12 @@ function webNavigationCommitted({transitionType, url}) {
 	});  
 }
 
-function webNavigationCompleted() {
+function webNavigationCompleted({frameId}) {
 	chrome.tabs.query({active: true}, activeTabs => {
-		if (activeTabs.length && activeTabs.length > 0) {
-			chrome.tabs.executeScript(activeTabs[0].id , {file:'attachListener.js'});
+		if (frameId === 0) {
+			if (activeTabs.length && activeTabs.length > 0) {
+				chrome.tabs.executeScript(activeTabs[0].id , {file:'attachListener.js'});
+			}
 		}
 	});
 }
