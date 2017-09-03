@@ -1,0 +1,27 @@
+{
+  "name": "wat-chrome-plugin",
+  "version": "1.0.0",
+  "description": "This plugin is used to record E2E tests on any web site",
+  "main": "eventPage.js",
+  "scripts": {
+    "build": "webpack",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/webautotester/chrome-plugin.git"
+  },
+  "author": "Xavier Blanc",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/webautotester/chrome-plugin/issues"
+  },
+  "homepage": "https://github.com/webautotester/chrome-plugin#readme",
+  "dependencies": {
+    "wat-action": "^1.0.3"
+  },
+  "devDependencies": {
+    "copy-webpack-plugin": "^4.0.1",
+    "webpack": "^3.5.5"
+  }
+}

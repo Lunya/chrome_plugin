@@ -13,21 +13,24 @@ class PopupManager {
 	}
     
 	render() {
-		if (this.pageManager.isRecording) {
-			this.button.innerHTML = STOP_RECORDING_TEXT;
-			this.scenarioDIV.innerHTML = this.pageManager.scenario;
-		} else {
-			this.button.innerHTML = START_RECORDING_TEXT;
-			this.scenarioDIV.innerHTML = this.pageManager.scenario;
-		}
+		chrome.runtime.sendMessage({kind:'status'}, response => {
+			this.pageManager = response;
+			if (this.pageManager.isRecording) {
+				this.button.innerHTML = STOP_RECORDING_TEXT;
+				this.scenarioDIV.innerHTML = this.pageManager.scenario;
+			} else {
+				this.button.innerHTML = START_RECORDING_TEXT;
+				this.scenarioDIV.innerHTML = this.pageManager.scenario;
+			}
+		});
 	}
 }
 
 function actionPerformed() {
 	if (this.pageManager.isRecording) {
-		this.pageManager.stopRecording();
+		chrome.runtime.sendMessage({kind:'stop'});
 	} else {
-		this.pageManager.startRecording();
+		chrome.runtime.sendMessage({kind:'start'});
 	}
 	this.render();
 }
@@ -35,8 +38,8 @@ function actionPerformed() {
 
 
 function popupIsLoaded() {
-	chrome.runtime.getBackgroundPage(function (bg) {
-		var popupManager = new PopupManager(bg.pageManager);
+	chrome.runtime.sendMessage({kind:'status'}, function (response) {
+		var popupManager = new PopupManager(response);
 		popupManager.start();
 		popupManager.render();
 	});

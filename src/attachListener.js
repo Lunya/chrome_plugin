@@ -8,8 +8,7 @@ function attach() {
 }
 
 function handleEvent (e) {
-	var action = e.type;
-	chrome.runtime.sendMessage(action + ' ' + e.target);
+	chrome.runtime.sendMessage({kind:'action', action:e.type + ' ' + e.target});
 }
 
 attach();
