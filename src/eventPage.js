@@ -2,7 +2,7 @@ import * as watlib from 'wat-action';
 
 class PageManager {
 	constructor() {
-		this.scenario = [];
+		this.scenario = new watlib.Scenario();
 		this.isRecording = false;
 	}
 
@@ -11,7 +11,7 @@ class PageManager {
 	}
 
 	startRecording() {
-		this.scenario = [];
+		this.scenario = new watlib.Scenario();
 		this.isRecording = true;
 		chrome.webNavigation.onCommitted.addListener(webNavigationCommitted);
 		chrome.webNavigation.onCompleted.addListener(webNavigationCompleted);
@@ -38,10 +38,10 @@ class PageManager {
 			this.stopRecording();
 			break;
 		case 'status': 
-			sendResponse({scenario : this.scenario, isRecording: this.isRecording});
+			sendResponse({scenario : this.scenario.toString(), isRecording: this.isRecording});
 			break;
 		case 'action' : 
-			this.scenario.push(msg.action);
+			this.scenario.addAction(watlib.ActionFactory.createAction(msg.action));
 			break;
 		}
 	}
@@ -51,8 +51,7 @@ function webNavigationCommitted({transitionType, url}) {
 	chrome.tabs.query({active: true, currentWindow: true}, activeTabs => {
 		if (transitionType === 'reload' || transitionType === 'start_page') {
 			if (activeTabs.length && activeTabs.length > 0) {
-				var msg = new watlib.GotoAction(url);
-				pageManager.scenario.push(JSON.stringify(msg));
+				pageManager.scenario.addAction(watlib.ActionFactory.createAction({type:'GotoAction', url:url}));
 			}
 		}
 	});  
