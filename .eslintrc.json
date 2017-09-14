@@ -1,13 +1,18 @@
 {
     "env": {
+        "browser": true,
         "es6": true,
         "node": true
     },
     "extends": "eslint:recommended",
     "parserOptions": {
-        "sourceType": "module"
+        "sourceType": "module",
+        "ecmaFeatures": {
+            "jsx": true
+        }
     },
     "rules": {
+        "no-console":0,
         "indent": [
             "error",
             "tab"
@@ -23,6 +28,11 @@
         "semi": [
             "error",
             "always"
-        ]
-    }
+        ],
+        "react/jsx-uses-react": "error",
+        "react/jsx-uses-vars": "error"
+    },
+    "plugins": [
+        "react"
+    ]
 }

@@ -4,6 +4,7 @@ class PageManager {
 	constructor() {
 		this.scenario = new watlib.Scenario();
 		this.isRecording = false;
+		this.isLoggedIn = false;
 	}
 
 	start() {
@@ -11,6 +12,7 @@ class PageManager {
 	}
 
 	startRecording() {
+		console.log('startRecording');
 		this.scenario = new watlib.Scenario();
 		this.isRecording = true;
 		chrome.webNavigation.onCommitted.addListener(webNavigationCommitted);
@@ -18,15 +20,26 @@ class PageManager {
 	
 		chrome.tabs.query({active: true, currentWindow: true}, activeTabs => {
 			if (activeTabs.length && activeTabs.length > 0) {
+				console.log('reload');
 				chrome.tabs.reload(activeTabs[0].id);
 			}
 		});
 	}
 
-	stopRecording() {
+	publishRecording() {
 		this.isRecording = false;
 		chrome.webNavigation.onCommitted.removeListener(webNavigationCommitted);
 		chrome.webNavigation.onCompleted.removeListener(webNavigationCompleted);
+		return   {
+			actions : this.scenario.actions
+		};
+	}
+
+	reinitRecording() {
+		this.isRecording = false;
+		chrome.webNavigation.onCommitted.removeListener(webNavigationCommitted);
+		chrome.webNavigation.onCompleted.removeListener(webNavigationCompleted);
+		this.scenario = new watlib.Scenario();
 	}
 
 	handleMessage(msg, sender, sendResponse) {
@@ -34,17 +47,26 @@ class PageManager {
 		case 'start': 
 			this.startRecording();
 			break;
-		case 'stop': 
-			this.stopRecording();
+		case 'publish': 
+			sendResponse(this.publishRecording());
 			break;
-		case 'status': 
-			var response = {
-				scenario : this.scenario.toJSON(),
+		case 'reinit': 
+			this.reinitRecording();
+			break;
+		case 'nowIsLogin': 
+			this.isLoggedIn = true;
+			break;
+		case 'nowIsLogout': 
+			this.isLoggedIn = false;
+			break;
+		case 'getState': 
+			sendResponse({
+				isLoggedIn: this.isLoggedIn,
 				isRecording: this.isRecording
-			};
-			sendResponse(response);
+			});
 			break;
 		case 'action' : 
+			console.log('action added');
 			this.scenario.addAction(watlib.ActionFactory.createAction(msg.action));
 			break;
 		}
@@ -56,6 +78,7 @@ function webNavigationCommitted({transitionType, url}) {
 		if (transitionType === 'reload' || transitionType === 'start_page') {
 			if (activeTabs.length && activeTabs.length > 0) {
 				pageManager.scenario.addAction(watlib.ActionFactory.createAction({type:'GotoAction', url:url}));
+				console.log('goto added');
 			}
 		}
 	});  
