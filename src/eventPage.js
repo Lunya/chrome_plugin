@@ -1,4 +1,4 @@
-import * as watlib from 'wat-action';
+import * as watlib from 'wat_action_nightmare';
 
 class PageManager {
 	constructor() {
