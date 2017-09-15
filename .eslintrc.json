@@ -4,6 +4,9 @@
         "es6": true,
         "node": true
     },
+    "globals": {
+        "chrome": true
+    },
     "extends": "eslint:recommended",
     "parserOptions": {
         "sourceType": "module",
@@ -16,10 +19,6 @@
         "indent": [
             "error",
             "tab"
-        ],
-        "linebreak-style": [
-            "error",
-            "unix"
         ],
         "quotes": [
             "error",
