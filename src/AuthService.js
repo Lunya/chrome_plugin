@@ -21,3 +21,16 @@ export function login(credentials) {
 			});
 	});
 }
+
+export function logout() {
+	return new Promise( (resolve, reject) => {
+		const url = `${BASE_URL}/logout`;
+		axios.get(url)
+			.then(response => {
+				resolve(response);
+			})
+			.catch(err => {
+				reject(err);
+			});
+	});
+}

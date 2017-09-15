@@ -1,4 +1,5 @@
 import React from 'react';
+import {logout} from './AuthService.js';
 import { Redirect } from 'react-router-dom';
 
 export default class Logout extends React.Component {
@@ -25,13 +26,20 @@ export default class Logout extends React.Component {
 
 	handleClick(event) {
 		event.preventDefault();
-		chrome.runtime.sendMessage({kind:'nowIsLogout'}),
-		this.setState( () => {
-			return {
-				isLoggedIn: false,
-				redirect : true
-			};
-		});
+		logout()
+			.then( response => {
+				console.log(response);
+				chrome.runtime.sendMessage({kind:'nowIsLogout'}),
+				this.setState( () => {
+					return {
+						isLoggedIn: false,
+						redirect : true
+					};
+				});
+			})
+			.catch(err => {
+				console.error(err);
+			});
 	}
 
 	render() {
