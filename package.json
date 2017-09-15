@@ -24,7 +24,7 @@
     "react": "^15.6.1",
     "react-dom": "^15.6.1",
     "react-router-dom": "^4.2.2",
-    "wat-action": "^1.0.4"
+    "wat_action_nightmare": "^1.0.7"
   },
   "devDependencies": {
     "babel-core": "^6.26.0",
