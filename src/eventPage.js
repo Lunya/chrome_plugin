@@ -66,7 +66,7 @@ class PageManager {
 			});
 			break;
 		case 'action' : 
-			console.log('action added');
+			console.log(`action added : ${msg.action.type}`);
 			this.scenario.addAction(watlib.ActionFactory.createAction(msg.action));
 			break;
 		}

@@ -1,10 +1,47 @@
 
 function attach() {
+	console.log('attach');
 	const inputs = document.querySelectorAll('input, textarea');
 	for (let i = 0; i < inputs.length; i++) {
 		inputs[i].addEventListener('input', handleInput);
 	}
+
+	const observer = new MutationObserver(handleMutation);
+	const config = {
+		childList: true,
+		subtree: true
+	};
+
+	const all = document.querySelectorAll('body *');
+	for (let i = 0; i < all.length; i++) {
+		console.log('mutation observe node');
+		observer.observe(all[i], config);
+	}
+	
 	document.body.addEventListener('click', handleClick);
+}
+
+function handleMutation(mutations) {
+	console.log('handleMutation');
+	mutations.forEach(mutationRecord => {
+		console.log(mutationRecord.type);
+		if (mutationRecord.type === 'childList') {
+			var addedNodes = mutationRecord.addedNodes;
+			for (var index = 0; index < addedNodes.length; index++) {
+				var addedNode = addedNodes[index];
+				console.log(addedNode.nodeName);
+				if (addedNode.tagName) {
+					const inputs = addedNode.querySelectorAll('input, textarea');
+					for (let i = 0; i < inputs.length; i++) {
+						console.log('add handleInput');
+						inputs[i].addEventListener('input', handleInput);
+					}
+				}
+			}
+		}
+	});
+	
+
 }
 
 function handleClick (e) {
