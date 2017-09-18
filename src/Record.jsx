@@ -1,8 +1,5 @@
 import React from 'react';
-import {render} from 'react-dom';
-import {addWaitToScenarioAndSave} from './ScenarioHelper.js';
-
-const WAIT_TIME = 3000;
+import {postScenario} from './ScenarioHelper.js';
 
 export default class Record extends React.Component {
 	constructor(props) {
@@ -47,16 +44,17 @@ export default class Record extends React.Component {
 		console.log('start publish');
 		chrome.runtime.sendMessage({kind:'publish'}, recordedScenario => {
 			console.log('publish ok');
-			addWaitToScenarioAndSave(recordedScenario, WAIT_TIME).then(() => {
-				this.setState( (prevState) => {
-					return {
-						start: false ,
-						publish: true ,
-						reinit: true ,
-						isLoggedIn : prevState.isLoggedIn
-					};
-				});
-			})
+			postScenario(recordedScenario)
+				.then(() => {
+					this.setState( (prevState) => {
+						return {
+							start: false ,
+							publish: true ,
+							reinit: true ,
+							isLoggedIn : prevState.isLoggedIn
+						};
+					});
+				})
 				.catch( err => {
 					console.log(err);
 				});

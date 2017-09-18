@@ -26,7 +26,7 @@ class PageManager {
 		});
 	}
 
-	publishRecording() {
+	getRecordedScenarioAndStop() {
 		this.isRecording = false;
 		chrome.webNavigation.onCommitted.removeListener(webNavigationCommitted);
 		chrome.webNavigation.onCompleted.removeListener(webNavigationCompleted);
@@ -48,7 +48,7 @@ class PageManager {
 			this.startRecording();
 			break;
 		case 'publish': 
-			sendResponse(this.publishRecording());
+			sendResponse(this.getRecordedScenarioAndStop());
 			break;
 		case 'reinit': 
 			this.reinitRecording();

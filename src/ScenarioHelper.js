@@ -2,13 +2,10 @@ import axios from 'axios';
 
 const BASE_URL = 'http://localhost:8080';
 
-export function addWaitToScenarioAndSave(scenario, time) {
+export function postScenario(scenario) {
 	return new Promise((resolve, reject) => {
-		const url = `${BASE_URL}/scenario/update_timeout`;
-		axios.post(url, {
-			scenario,
-			time
-		})
+		const url = `${BASE_URL}/scenario`;
+		axios.post(url, scenario)
 			.then( response => {
 				resolve(response.data);
 			})
