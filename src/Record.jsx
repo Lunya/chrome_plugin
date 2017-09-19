@@ -1,14 +1,16 @@
 import React from 'react';
 import {postScenario} from './ScenarioHelper.js';
 
+import { Redirect } from 'react-router-dom';
+import { Row, Button } from 'react-bootstrap';
+
 export default class Record extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
 			start: false,
 			publish: true,
-			reinit: true,
-			isLoggedIn: false
+			reinit: true
 		};
 		this.clickStart = this.clickStart.bind(this);
 		this.clickPublish = this.clickPublish.bind(this);
@@ -21,26 +23,26 @@ export default class Record extends React.Component {
 				return {
 					start: response.isRecording ,
 					publish: !response.isRecording ,
-					reinit: !response.isRecording ,
-					isLoggedIn : response.isLoggedIn
+					reinit: !response.isRecording 
 				};
 			});
 		});
 	}
 
-	clickStart() {
+	clickStart(event) {
+		event.preventDefault();
 		chrome.runtime.sendMessage({kind:'start'});
 		this.setState( (prevState) => {
 			return {
 				start: true ,
 				publish: false ,
-				reinit: false ,
-				isLoggedIn : prevState.isLoggedIn
+				reinit: false 
 			};
 		});
 	}
 
-	clickPublish() {
+	clickPublish(event) {
+		event.preventDefault();
 		console.log('start publish');
 		chrome.runtime.sendMessage({kind:'publish'}, recordedScenario => {
 			console.log('publish ok');
@@ -50,8 +52,7 @@ export default class Record extends React.Component {
 						return {
 							start: false ,
 							publish: true ,
-							reinit: true ,
-							isLoggedIn : prevState.isLoggedIn
+							reinit: true 
 						};
 					});
 				})
@@ -61,31 +62,32 @@ export default class Record extends React.Component {
 		});
 	}
 
-	clickReinit() {
+	clickReinit(event) {
+		event.preventDefault();
 		chrome.runtime.sendMessage({kind:'reinit'});
 		this.setState( (prevState) => {
 			return {
 				start: false ,
 				publish: true ,
-				reinit: true ,
-				isLoggedIn : prevState.isLoggedIn
+				reinit: true 
 			};
 		});
 	}
 
 	render() {
-		if (this.state.isLoggedIn) {
+		if (this.state.start) {
 			return (
-				<div>
-					<button onClick={this.clickStart} disabled={this.state.start}>START RECORDING</button>
-					<button onClick={this.clickPublish} disabled={this.state.publish}>STOP AND PUBLISH</button>
-					<button onClick={this.clickReinit} disabled={this.state.reinit}>STOP AND REINIT</button>
-				</div>
+				<Row>
+					<Button onClick={this.clickPublish} disabled={this.state.publish}>STOP AND PUBLISH</Button>
+					<Button onClick={this.clickReinit} disabled={this.state.reinit}>STOP AND REINIT</Button>
+				</Row>
 			);
-		} else {
+		}
+		else {
 			return (
-				<div>Not Logged Yet !</div>
-
+				<Row>
+					<Button onClick={this.clickStart} disabled={this.state.start}>START RECORDING</Button>
+				</Row>
 			);
 		}
 	}

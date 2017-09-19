@@ -2,6 +2,8 @@ import React from 'react';
 import {login} from './AuthService.js';
 import { Redirect } from 'react-router-dom';
 
+import { FormGroup, FormControl, ControlLabel, Button, Alert } from 'react-bootstrap';
+
 export default class Login extends React.Component {
 
 	constructor(props) {
@@ -11,6 +13,7 @@ export default class Login extends React.Component {
 				username : '',
 				password :''
 			},
+			message: null,
 			isLoggedIn : false
 		};
 		this.handleChange = this.handleChange.bind(this);
@@ -19,16 +22,19 @@ export default class Login extends React.Component {
     
 	componentDidMount() {
 		chrome.runtime.sendMessage({kind:'getState'}, response => {
+			console.log(`Login did mount ${response.isLoggedIn}`);
 			this.setState( (prevState) => {
 				return {
 					credential : prevState.credential,
-					isLoggedIn : response.isLoggedIn
+					isLoggedIn : response.isLoggedIn,
+					message: null
 				};
 			});
 		});
 	}
 
 	handleChange(event) {
+		event.preventDefault();
 		console.log('handleChange');
 		var eventID = event.target.id;
 		var eventValue = event.target.value;   
@@ -38,13 +44,18 @@ export default class Login extends React.Component {
 				credential: {
 					username: eventValue, 
 					password: prevState.credential.password
-				}
+				},
+				isLoggedIn : prevState.isLoggedIn,
+				message : prevState.message
 			};
 			case 'password' : return {
 				credential: {
 					username: prevState.credential.username, 
-					password: eventValue
-				}};
+					password: eventValue,
+				},
+				isLoggedIn : prevState.isLoggedIn,
+				message : prevState.message
+			};
 			}
 		});
 	}
@@ -54,20 +65,22 @@ export default class Login extends React.Component {
 		login(this.state.credential)
 			.then( () => {
 				console.log('connected !!!');
+				chrome.runtime.sendMessage({kind:'nowIsLogin'});
 				this.setState( prevState => {
 					return {
 						credential: prevState.credential,
-						isLoggedIn : true
+						isLoggedIn : true,
+						message : null
 					};
 				});
-				chrome.runtime.sendMessage({kind:'nowIsLogin'});
 			})
 			.catch(err => {
 				console.log(err);
 				this.setState( prevState => {
 					return {
 						credential: prevState.credential,
-						isLoggedIn : false
+						isLoggedIn : false,
+						message : 'username / password incorrect'
 					};
 				});
 				chrome.runtime.sendMessage({kind:'nowIsLogout'});
@@ -75,24 +88,27 @@ export default class Login extends React.Component {
 	}
 
 	render() {
-		
 		if (this.state.isLoggedIn) {
-			return <div> You are logged ! </div>;
+			return <Redirect to="/record"/>;
 		} else {
+			let errorMessage;
+			if  (this.state.message) {
+				errorMessage = <Alert bsStyle="warning">
+					<strong>{this.state.message}</strong>
+				</Alert>;
+			}
 			return (
 				<form onSubmit={this.handleSubmit}>
-					<div>
-						<label>Username:</label>
-						<input type="text" id="username" value={this.state.username} onChange={this.handleChange}/>
-					</div>
-					<div>
-						<label>Password:</label>
-						<input type="password" id="password" value={this.state.password} onChange={this.handleChange}/>
-					</div>
-					<div>
-						<input type="submit" value="Log In"/>
-					</div>
-					<span>{this.state.message}</span>
+					<FormGroup>
+						<ControlLabel>Username</ControlLabel>
+						<FormControl id="username" type="text" value={this.state.username} onChange={this.handleChange}/>
+					</FormGroup>
+					<FormGroup>
+						<ControlLabel>Password</ControlLabel>
+						<FormControl id="password" type="password" value={this.state.password} onChange={this.handleChange}/>
+					</FormGroup>
+					<Button type="submit">Log In</Button>
+					{errorMessage}
 				</form>
 			);
 		}
