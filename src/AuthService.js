@@ -1,11 +1,11 @@
 import axios from 'axios';
 
-//const BASE_URL = 'http://localhost:8080';
-const BASE_URL = 'http://ec2-34-210-184-241.us-west-2.compute.amazonaws.com:8080';
+const BASE_URL = 'http://localhost';
+//const BASE_URL = 'http://ec2-34-210-184-241.us-west-2.compute.amazonaws.com:8080';
 
 export function login(credentials) {
 	return new Promise( (resolve, reject) => {
-		const url = `${BASE_URL}/login`;
+		const url = `${BASE_URL}/api/login`;
 		axios.post(url, credentials  )
 			.then( response => {
 				if (response.status === 401) {
@@ -25,7 +25,7 @@ export function login(credentials) {
 
 export function logout() {
 	return new Promise( (resolve, reject) => {
-		const url = `${BASE_URL}/logout`;
+		const url = `${BASE_URL}/api/logout`;
 		axios.get(url)
 			.then(response => {
 				resolve(response);

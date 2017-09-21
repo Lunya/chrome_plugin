@@ -1,6 +1,6 @@
 import React from 'react';
 import {postScenario} from './ScenarioHelper.js';
-
+import {logout} from './AuthService.js';
 import { Redirect } from 'react-router-dom';
 import { Row, Button } from 'react-bootstrap';
 
@@ -10,11 +10,13 @@ export default class Record extends React.Component {
 		this.state = {
 			start: false,
 			publish: true,
-			reinit: true
+			reinit: true,
+			redirect: false 
 		};
 		this.clickStart = this.clickStart.bind(this);
 		this.clickPublish = this.clickPublish.bind(this);
 		this.clickReinit = this.clickReinit.bind(this);
+		this.clickLogout = this.clickLogout.bind(this);
 	}
 
 	componentDidMount() {
@@ -23,7 +25,8 @@ export default class Record extends React.Component {
 				return {
 					start: response.isRecording ,
 					publish: !response.isRecording ,
-					reinit: !response.isRecording 
+					reinit: !response.isRecording,
+					redirect: false 
 				};
 			});
 		});
@@ -36,7 +39,8 @@ export default class Record extends React.Component {
 			return {
 				start: true ,
 				publish: false ,
-				reinit: false 
+				reinit: false ,
+				redirect: false 
 			};
 		});
 	}
@@ -52,7 +56,8 @@ export default class Record extends React.Component {
 						return {
 							start: false ,
 							publish: true ,
-							reinit: true 
+							reinit: true ,
+							redirect: false
 						};
 					});
 				})
@@ -69,26 +74,62 @@ export default class Record extends React.Component {
 			return {
 				start: false ,
 				publish: true ,
-				reinit: true 
+				reinit: true ,
+				redirect: false
 			};
 		});
 	}
 
+	clickLogout(event) {
+		event.preventDefault();
+		logout()
+			.then( response => {
+				console.log(response);
+				chrome.runtime.sendMessage({kind:'nowIsLogout'}),
+				this.setState( (prevState) => {
+					return {
+						start: prevState.start ,
+						publish: prevState.publish ,
+						reinit: prevState.reinit ,
+						redirect : true
+					};
+				});
+			})
+			.catch(err => {
+				console.error(err);
+			});
+	}
+
 	render() {
-		if (this.state.start) {
-			return (
-				<Row>
-					<Button onClick={this.clickPublish} disabled={this.state.publish}>STOP AND PUBLISH</Button>
-					<Button onClick={this.clickReinit} disabled={this.state.reinit}>STOP AND REINIT</Button>
-				</Row>
-			);
+		if (this.state.redirect) {
+			return <Redirect to="/login"/>;
 		}
 		else {
-			return (
-				<Row>
-					<Button onClick={this.clickStart} disabled={this.state.start}>START RECORDING</Button>
-				</Row>
-			);
+			if (this.state.start) {
+				return (
+					<div>
+						<Row>
+							<Button onClick={this.clickPublish}>STOP AND PUBLISH</Button>
+							<Button onClick={this.clickReinit}>STOP AND REINIT</Button>
+						</Row>
+						<Row>
+							<Button onClick={this.clickLogout}>Logout</Button>
+						</Row>
+					</div>
+				);
+			}
+			else {
+				return (
+					<div>
+						<Row>
+							<Button onClick={this.clickStart}>START RECORDING</Button>
+						</Row>
+						<Row>
+							<Button onClick={this.clickLogout}>Logout</Button>
+						</Row>
+					</div>
+				);
+			}
 		}
 	}
 }
