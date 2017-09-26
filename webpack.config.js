@@ -1,10 +1,14 @@
 const CopyPlugin = require('copy-webpack-plugin');
 const path = require('path');
 
+const DEFAULT_CONFIG = './src/config/debug-win.json';
+
 module.exports = function(env) {
-	var config = './src/config/debug-win.json';
-	if (typeof env.config !== 'undefined')
+	var config = DEFAULT_CONFIG;
+	if (env !== undefined &&  env.config !== undefined)
 		config = './src/config/' + env.config;
+
+	console.log(`config: ${config}`);
 
 	return {
 		entry: {
