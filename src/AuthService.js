@@ -1,8 +1,7 @@
 import axios from 'axios';
+import { config } from './pluginConfig.js';
 
-//const BASE_URL = 'http://localhost';
-//const BASE_URL = 'http://18.194.148.175';
-const BASE_URL = 'http://37.59.110.250';
+const BASE_URL = config.baseUrl;
 
 export function login(credentials) {
 	return new Promise( (resolve, reject) => {

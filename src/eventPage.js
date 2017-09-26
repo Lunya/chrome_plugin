@@ -5,7 +5,6 @@ class PageManager {
 		this.scenario = new watlib.Scenario();
 		this.isRecording = false;
 		this.isLoggedIn = false;
-
 		this.handleMessage = this.handleMessage.bind(this);
 		this.startRecording = this.startRecording.bind(this);
 		this.startRecording = this.startRecording.bind(this);
@@ -21,28 +20,28 @@ class PageManager {
 
 	handleMessage(msg, sender, sendResponse) {
 		switch (msg.kind) {
-		case 'start': 
+		case 'start':
 			this.startRecording();
 			break;
-		case 'publish': 
+		case 'publish':
 			sendResponse(this.getRecordedScenarioAndStop());
 			break;
-		case 'reinit': 
+		case 'reinit':
 			this.reinitRecording();
 			break;
-		case 'nowIsLogin': 
+		case 'nowIsLogin':
 			this.isLoggedIn = true;
 			break;
-		case 'nowIsLogout': 
+		case 'nowIsLogout':
 			this.isLoggedIn = false;
 			break;
-		case 'getState': 
+		case 'getState':
 			sendResponse({
 				isLoggedIn: this.isLoggedIn,
 				isRecording: this.isRecording
 			});
 			break;
-		case 'action' : 
+		case 'action' :
 			console.log(`action added : ${msg.action.type}`);
 			this.scenario.addAction(watlib.ActionFactory.createAction(msg.action));
 			break;
@@ -55,7 +54,7 @@ class PageManager {
 		this.isRecording = true;
 		chrome.webNavigation.onCommitted.addListener(this.webNavigationCommitted);
 		chrome.webNavigation.onCompleted.addListener(this.webNavigationCompleted);
-	
+
 		chrome.tabs.query({active: true, currentWindow: true}, activeTabs => {
 			if (activeTabs.length && activeTabs.length > 0) {
 				console.log('reload');
@@ -88,7 +87,7 @@ class PageManager {
 					console.log('goto added');
 				}
 			}
-		});  
+		});
 	}
 
 	webNavigationCompleted({frameId}) {
