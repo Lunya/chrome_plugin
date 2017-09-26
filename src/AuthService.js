@@ -1,7 +1,8 @@
 import axios from 'axios';
 
-const BASE_URL = 'http://localhost';
-//const BASE_URL = 'http://ec2-34-210-184-241.us-west-2.compute.amazonaws.com:8080';
+//const BASE_URL = 'http://localhost';
+//const BASE_URL = 'http://18.194.148.175';
+const BASE_URL = 'http://37.59.110.250';
 
 export function login(credentials) {
 	return new Promise( (resolve, reject) => {
