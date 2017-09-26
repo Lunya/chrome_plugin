@@ -1,7 +1,6 @@
 import React from 'react';
-import {login} from './AuthService.js';
+import {login} from './services.js';
 import { Redirect } from 'react-router-dom';
-
 import { FormGroup, FormControl, ControlLabel, Button, Alert } from 'react-bootstrap';
 
 export default class Login extends React.Component {

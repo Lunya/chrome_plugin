@@ -1,5 +1,5 @@
 import React from 'react';
-import {logout} from './AuthService.js';
+import {logout} from './services.js';
 import { Redirect } from 'react-router-dom';
 import { Button, Alert} from 'react-bootstrap';
 

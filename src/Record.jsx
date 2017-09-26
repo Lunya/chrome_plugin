@@ -1,6 +1,5 @@
 import React from 'react';
-import {postScenario} from './ScenarioHelper.js';
-import {logout} from './AuthService.js';
+import {postScenario, logout} from './services.js';
 import { Redirect } from 'react-router-dom';
 import { Row, Button } from 'react-bootstrap';
 

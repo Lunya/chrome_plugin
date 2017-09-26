@@ -8,7 +8,7 @@ module.exports = function(env) {
 
 	return {
 		entry: {
-			background: './src/eventPage.js',
+			background: './src/background.js',
 			popup: './src/popup.jsx'
 		},
 		output: {
