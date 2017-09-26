@@ -17,7 +17,7 @@ function attach() {
 		console.log('mutation observe node');
 		observer.observe(all[i], config);
 	}
-	
+
 	document.body.addEventListener('click', handleClick);
 }
 
@@ -40,7 +40,7 @@ function handleMutation(mutations) {
 			}
 		}
 	});
-	
+
 
 }
 
