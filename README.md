@@ -9,8 +9,8 @@ Use NPM and Webpack to build the plugin.
     npm install
     npm run build
 
-You can pick up a configuration (debug or prod) with:
-    npm run build -- --env.config=debug-win.json
+You can also create a debug configuration with:
+    npm run debug
 
 The plugin will be built in the 'crx' directory
 
