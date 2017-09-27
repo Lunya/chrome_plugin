@@ -1,7 +1,4 @@
 import axios from 'axios';
-import { config } from './pluginConfig.js';
-
-const BASE_URL = config.baseUrl;
 
 export function login(credentials) {
 	return new Promise( (resolve, reject) => {
