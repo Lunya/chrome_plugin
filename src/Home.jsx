@@ -28,7 +28,7 @@ export default class Home extends React.Component {
 			return <Redirect to="/record"/>;
 		}
 		else {
-			return <LinkContainer to="/login"><Button>Log in !</Button></LinkContainer>;
+			return <LinkContainer to="/login"><Button bsStyle="primary">Login</Button></LinkContainer>;
 		}
 	}
 

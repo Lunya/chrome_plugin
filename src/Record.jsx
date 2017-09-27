@@ -1,7 +1,7 @@
 import React from 'react';
 import {postScenario, logout} from './services.js';
 import { Redirect } from 'react-router-dom';
-import { Row, Button } from 'react-bootstrap';
+import { ButtonToolbar, Button } from 'react-bootstrap';
 
 export default class Record extends React.Component {
 	constructor(props) {
@@ -10,7 +10,7 @@ export default class Record extends React.Component {
 			start: false,
 			publish: true,
 			reinit: true,
-			redirect: false 
+			redirect: false
 		};
 		this.clickStart = this.clickStart.bind(this);
 		this.clickPublish = this.clickPublish.bind(this);
@@ -25,7 +25,7 @@ export default class Record extends React.Component {
 					start: response.isRecording ,
 					publish: !response.isRecording ,
 					reinit: !response.isRecording,
-					redirect: false 
+					redirect: false
 				};
 			});
 		});
@@ -39,7 +39,7 @@ export default class Record extends React.Component {
 				start: true ,
 				publish: false ,
 				reinit: false ,
-				redirect: false 
+				redirect: false
 			};
 		});
 	}
@@ -107,29 +107,22 @@ export default class Record extends React.Component {
 			if (this.state.start) {
 				return (
 					<div>
-						<Row>
-							<Button onClick={this.clickPublish}>STOP AND PUBLISH</Button>
-							<Button onClick={this.clickReinit}>STOP AND REINIT</Button>
-						</Row>
-						<Row>
-							<Button onClick={this.clickLogout}>Logout</Button>
-						</Row>
+						<ButtonToolbar>
+							<Button bsStyle="primary" onClick={this.clickPublish}>Publish</Button>
+							<Button bsStyle="danger" onClick={this.clickReinit}>Delete</Button>
+							<Button bsStyle="danger" onClick={this.clickLogout}>Logout</Button>
+						</ButtonToolbar>
 					</div>
 				);
 			}
 			else {
 				return (
-					<div>
-						<Row>
-							<Button onClick={this.clickStart}>START RECORDING</Button>
-						</Row>
-						<Row>
-							<Button onClick={this.clickLogout}>Logout</Button>
-						</Row>
-					</div>
+					<ButtonToolbar>
+						<Button bsStyle="primary" onClick={this.clickStart}>Record</Button>
+						<Button bsStyle="danger" onClick={this.clickLogout}>Logout</Button>
+					</ButtonToolbar>
 				);
 			}
 		}
 	}
 }
-
