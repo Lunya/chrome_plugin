@@ -49,7 +49,7 @@ export default class Logout extends React.Component {
 		}
 		else {
 			if (this.state.isLoggedIn) {
-				return (<Button bsStyle="warning" bsSize="large" onClick={this.handleClick}> Loggout ? </Button>);
+				return (<Button bsStyle="danger" onClick={this.handleClick}>Logout</Button>);
 			} else {
 				return (
 					<Alert bsStyle="warning">
