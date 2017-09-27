@@ -5,7 +5,8 @@ module.exports =  {
 	context: path.resolve(__dirname,'..'),
 	entry: {
 		background: './src/background.js',
-		popup: './src/popup.jsx'
+		popup: './src/popup.jsx',
+		listener: './src/attachListener.js'
 	},
 	output: {
 		filename: '[name].bundle.js',
@@ -24,7 +25,6 @@ module.exports =  {
 	},
 	plugins: [
 		new CopyPlugin([
-			{ from: './src/attachListener.js', to: 'attachListener.js' },
 			{ from: './src/manifest.json', to: 'manifest.json' },
 			{ from: './src/icon.png', to: 'icon.png' },
 			{ from: './src/popup.html', to: 'popup.html' }

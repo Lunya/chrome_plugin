@@ -1,3 +1,4 @@
+import { select } from 'optimal-select';
 
 function attach() {
 	console.log('attach');
@@ -45,7 +46,7 @@ function handleMutation(mutations) {
 }
 
 function handleClick (e) {
-	chrome.runtime.sendMessage({kind:'action', action: {type:'ClickAction', selector: computeSelectorWithID(e.target)} });
+	chrome.runtime.sendMessage({kind:'action', action: {type:'ClickAction', selector: computeSelector(e.target)} });
 }
 
 function handleInput(e) {
@@ -53,11 +54,18 @@ function handleInput(e) {
 		kind:'action',
 		action: {
 			type:'TypeAction',
-			selectorID: computeSelectorWithID(e.target),
-			selectorPATH: computeSelectorWithPath(e.target),
+			selector: computeSelector(e.target),
 			text: e.target.value
 		}
 	});
+}
+
+function computeSelector(el) {
+	return {
+		watId: computeSelectorWithID(el),
+		watPath: computeSelectorWithPath(el),
+		optimal: computeSelectorOptimal(el)
+	};
 }
 
 function computeSelectorWithID(el) {
@@ -91,6 +99,12 @@ function computeSelectorWithPath(el) {
 		el = el.parentNode;
 	}
 	return names.join(' > ');
+}
+
+function computeSelectorOptimal(el) {
+	var selector = select(el);
+	console.log(selector);
+	return selector;
 }
 
 attach();

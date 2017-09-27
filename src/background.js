@@ -1,8 +1,6 @@
-import * as watlib from 'wat_action_nightmare';
-
 class PageManager {
 	constructor() {
-		this.scenario = new watlib.Scenario();
+		this.scenario = [];
 		this.isRecording = false;
 		this.isLoggedIn = false;
 		this.handleMessage = this.handleMessage.bind(this);
@@ -43,14 +41,14 @@ class PageManager {
 			break;
 		case 'action' :
 			console.log(`action added : ${msg.action.type}`);
-			this.scenario.addAction(watlib.ActionFactory.createAction(msg.action));
+			this.scenario.push(msg.action);
 			break;
 		}
 	}
 
 	startRecording() {
 		console.log('startRecording');
-		this.scenario = new watlib.Scenario();
+		this.scenario = [];
 		this.isRecording = true;
 		chrome.webNavigation.onCommitted.addListener(this.webNavigationCommitted);
 		chrome.webNavigation.onCompleted.addListener(this.webNavigationCompleted);
@@ -68,7 +66,7 @@ class PageManager {
 		chrome.webNavigation.onCommitted.removeListener(this.webNavigationCommitted);
 		chrome.webNavigation.onCompleted.removeListener(this.webNavigationCompleted);
 		return   {
-			actions : this.scenario.actions
+			actions : this.scenario
 		};
 	}
 
@@ -76,14 +74,14 @@ class PageManager {
 		this.isRecording = false;
 		chrome.webNavigation.onCommitted.removeListener(this.webNavigationCommitted);
 		chrome.webNavigation.onCompleted.removeListener(this.webNavigationCompleted);
-		this.scenario = new watlib.Scenario();
+		this.scenario = [];
 	}
 
 	webNavigationCommitted({transitionType, url}) {
 		chrome.tabs.query({active: true, currentWindow: true}, activeTabs => {
 			if (transitionType === 'reload' || transitionType === 'start_page') {
 				if (activeTabs.length && activeTabs.length > 0) {
-					pageManager.scenario.addAction(watlib.ActionFactory.createAction({type:'GotoAction', url:url}));
+					pageManager.scenario.push({type:'GotoAction', url:url});
 					console.log('goto added');
 				}
 			}
@@ -94,7 +92,7 @@ class PageManager {
 		chrome.tabs.query({active: true}, activeTabs => {
 			if (frameId === 0) {
 				if (activeTabs.length && activeTabs.length > 0) {
-					chrome.tabs.executeScript(activeTabs[0].id , {file:'attachListener.js'});
+					chrome.tabs.executeScript(activeTabs[0].id , {file:'listener.bundle.js'});
 				}
 			}
 		});
