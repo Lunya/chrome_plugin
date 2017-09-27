@@ -1,5 +1,5 @@
 import React from 'react';
-import {login} from './services.js';
+import { login } from './services.js';
 import { Redirect } from 'react-router-dom';
 import { FormGroup, FormControl, ControlLabel, Button, Alert } from 'react-bootstrap';
 
@@ -18,7 +18,7 @@ export default class Login extends React.Component {
 		this.handleChange = this.handleChange.bind(this);
 		this.handleSubmit = this.handleSubmit.bind(this);
 	}
-    
+
 	componentDidMount() {
 		chrome.runtime.sendMessage({kind:'getState'}, response => {
 			console.log(`Login did mount ${response.isLoggedIn}`);
@@ -36,12 +36,12 @@ export default class Login extends React.Component {
 		event.preventDefault();
 		console.log('handleChange');
 		var eventID = event.target.id;
-		var eventValue = event.target.value;   
+		var eventValue = event.target.value;
 		this.setState( (prevState) => {
 			switch (eventID) {
-			case 'username' : return { 
+			case 'username' : return {
 				credential: {
-					username: eventValue, 
+					username: eventValue,
 					password: prevState.credential.password
 				},
 				isLoggedIn : prevState.isLoggedIn,
@@ -49,7 +49,7 @@ export default class Login extends React.Component {
 			};
 			case 'password' : return {
 				credential: {
-					username: prevState.credential.username, 
+					username: prevState.credential.username,
 					password: eventValue,
 				},
 				isLoggedIn : prevState.isLoggedIn,
@@ -106,11 +106,11 @@ export default class Login extends React.Component {
 						<ControlLabel>Password</ControlLabel>
 						<FormControl id="password" type="password" value={this.state.password} onChange={this.handleChange}/>
 					</FormGroup>
-					<Button type="submit">Log In</Button>
+					<Button bsStyle="primary" type="submit">Login</Button>
 					{errorMessage}
 				</form>
 			);
 		}
-		
+
 	}
 }
