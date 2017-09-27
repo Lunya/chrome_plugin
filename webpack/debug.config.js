@@ -8,5 +8,6 @@ module.exports = merge(baseConfig, {
 	plugins: [
 		new webpack.DefinePlugin({
 			BASE_URL : JSON.stringify('http://localhost:1234')
-		})]
+		})
+	]
 });

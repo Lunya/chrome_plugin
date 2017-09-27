@@ -4,7 +4,7 @@
   "description": "This plugin is used to record E2E tests on any web site",
   "main": "eventPage.js",
   "scripts": {
-    "build": "webpack --config webpack/prod.config.js",
+    "prod": "webpack --config webpack/prod.config.js",
     "debug": "webpack --config webpack/debug.config.js",
     "watch": "webpack --watch",
     "test": "echo \"Error: no test specified\" && exit 1"
