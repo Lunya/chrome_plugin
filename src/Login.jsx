@@ -1,7 +1,7 @@
 import React from 'react';
 import { login } from './services.js';
 import { Redirect } from 'react-router-dom';
-import { FormGroup, FormControl, ControlLabel, Button, Alert } from 'react-bootstrap';
+import { Form, Col, FormGroup, FormControl, ControlLabel, Button, Alert } from 'react-bootstrap';
 
 export default class Login extends React.Component {
 
@@ -15,14 +15,12 @@ export default class Login extends React.Component {
 			message: null,
 			isLoggedIn : false
 		};
-		this.handleChange = this.handleChange.bind(this);
 		this.handleSubmit = this.handleSubmit.bind(this);
 	}
 
 	componentDidMount() {
 		chrome.runtime.sendMessage({kind:'getState'}, response => {
-			console.log(`Login did mount ${response.isLoggedIn}`);
-			this.setState( (prevState) => {
+			this.setState(prevState => {
 				return {
 					credential : prevState.credential,
 					isLoggedIn : response.isLoggedIn,
@@ -32,83 +30,67 @@ export default class Login extends React.Component {
 		});
 	}
 
-	handleChange(event) {
-		event.preventDefault();
-		console.log('handleChange');
-		var eventID = event.target.id;
-		var eventValue = event.target.value;
-		this.setState( (prevState) => {
-			switch (eventID) {
-			case 'username' : return {
-				credential: {
-					username: eventValue,
-					password: prevState.credential.password
-				},
-				isLoggedIn : prevState.isLoggedIn,
-				message : prevState.message
-			};
-			case 'password' : return {
-				credential: {
-					username: prevState.credential.username,
-					password: eventValue,
-				},
-				isLoggedIn : prevState.isLoggedIn,
-				message : prevState.message
-			};
-			}
-		});
-	}
-
 	handleSubmit(event) {
 		event.preventDefault();
-		login(this.state.credential)
-			.then( () => {
-				console.log('connected !!!');
-				chrome.runtime.sendMessage({kind:'nowIsLogin'});
-				this.setState( prevState => {
-					return {
-						credential: prevState.credential,
-						isLoggedIn : true,
-						message : null
-					};
-				});
-			})
-			.catch(err => {
-				console.log(err);
-				this.setState( prevState => {
-					return {
-						credential: prevState.credential,
-						isLoggedIn : false,
-						message : 'username / password incorrect'
-					};
-				});
-				chrome.runtime.sendMessage({kind:'nowIsLogout'});
+		var button = document.getElementById('loginButton');
+		var span = document.createElement('span');
+		span.setAttribute('class', 'glyphicon glyphicon-refresh glyphicon-refresh-animate');
+		button.insertBefore(span, button.firstChild);
+		var credential = {
+			username: document.getElementById('username').value,
+			password: document.getElementById('password').value
+		};
+		login(credential).then(() => {
+			chrome.runtime.sendMessage({ kind: 'nowIsLogin' });
+			this.setState(() => {
+				return {
+					credential: credential,
+					isLoggedIn : true,
+					message : null
+				};
 			});
+			button.removeChild(span);
+		}).catch(err => {
+			console.log(err);
+			this.setState(() => {
+				return {
+					credential: credential,
+					isLoggedIn : false,
+					message : 'Invalid username or password.'
+				};
+			});
+			chrome.runtime.sendMessage({ kind: 'nowIsLogout' });
+			button.removeChild(span);
+		});
 	}
 
 	render() {
 		if (this.state.isLoggedIn) {
 			return <Redirect to="/record"/>;
 		} else {
-			let errorMessage;
-			if  (this.state.message) {
-				errorMessage = <Alert bsStyle="warning">
-					<strong>{this.state.message}</strong>
-				</Alert>;
-			}
 			return (
-				<form onSubmit={this.handleSubmit}>
+				<Form horizontal onSubmit={this.handleSubmit}>
 					<FormGroup>
-						<ControlLabel>Username</ControlLabel>
-						<FormControl id="username" type="text" value={this.state.username} onChange={this.handleChange}/>
+						<Col xs={2}><ControlLabel>Username</ControlLabel></Col>
+						<Col xs={10}>
+							<FormControl id="username" type="text" value={this.state.username}/>
+						</Col>
 					</FormGroup>
 					<FormGroup>
-						<ControlLabel>Password</ControlLabel>
-						<FormControl id="password" type="password" value={this.state.password} onChange={this.handleChange}/>
+						<Col xs={2}><ControlLabel>Password</ControlLabel></Col>
+						<Col xs={10}>
+							<FormControl id="password" type="password" value={this.state.password}/>
+						</Col>
 					</FormGroup>
-					<Button bsStyle="primary" type="submit">Login</Button>
-					{errorMessage}
-				</form>
+					{this.state.message &&
+						<FormGroup>
+							<Col xsOffset={2} xs={10}><Alert bsStyle="danger">{this.state.message}</Alert></Col>
+						</FormGroup>
+					}
+					<FormGroup>
+						<Col xsOffset={2} xs={10}><Button id="loginButton" bsStyle="primary" type="submit">Login</Button></Col>
+					</FormGroup>
+				</Form>
 			);
 		}
 
