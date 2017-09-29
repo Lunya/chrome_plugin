@@ -1,5 +1,5 @@
 import React from 'react';
-import {postScenario, logout} from './services.js';
+import { postScenario, logout } from './services.js';
 import { Redirect } from 'react-router-dom';
 import { ButtonToolbar, Button } from 'react-bootstrap';
 
@@ -101,7 +101,7 @@ export default class Record extends React.Component {
 
 	render() {
 		if (this.state.redirect) {
-			return <Redirect to="/login"/>;
+			return <Redirect to="/popup.html"/>;
 		}
 		else {
 			if (this.state.start) {
