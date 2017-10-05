@@ -19,6 +19,12 @@ function attach() {
 		observer.observe(all[i], config);
 	}
 
+	const selects = document.querySelectorAll('select');
+	for (let i = 0; i < selects.length; i++) {
+		console.log('handle select element');
+		selects[i].addEventListener('change', handleChange); 
+	}
+
 	document.body.addEventListener('click', handleClick);
 }
 
@@ -46,7 +52,10 @@ function handleMutation(mutations) {
 }
 
 function handleClick (e) {
-	chrome.runtime.sendMessage({kind:'action', action: {type:'ClickAction', selector: computeSelector(e.target)} });
+	console.log(e.target.tagName);
+	if (e.target.tagName.toLowerCase() !== 'input' ) {
+		chrome.runtime.sendMessage({kind:'action', action: {type:'ClickAction', selector: computeSelector(e.target)} });
+	}
 }
 
 function handleInput(e) {
@@ -56,6 +65,17 @@ function handleInput(e) {
 			type:'TypeAction',
 			selector: computeSelector(e.target),
 			text: e.target.value
+		}
+	});
+}
+
+function handleChange(e) {
+	chrome.runtime.sendMessage({
+		kind:'action',
+		action: {
+			type:'SelectAction',
+			selector: computeSelector(e.target),
+			option: e.target.value
 		}
 	});
 }
@@ -102,9 +122,7 @@ function computeSelectorWithPath(el) {
 }
 
 function computeSelectorOptimal(el) {
-	var selector = select(el);
-	console.log(selector);
-	return selector;
+	return select(el);
 }
 
 attach();

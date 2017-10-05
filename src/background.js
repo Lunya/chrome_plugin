@@ -66,7 +66,8 @@ class PageManager {
 		chrome.webNavigation.onCommitted.removeListener(this.webNavigationCommitted);
 		chrome.webNavigation.onCompleted.removeListener(this.webNavigationCompleted);
 		return   {
-			actions : this.scenario
+			actions : this.scenario,
+			wait : 1000
 		};
 	}
 
