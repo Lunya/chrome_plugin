@@ -1,8 +1,12 @@
+import { sha256 } from 'js-sha256';
+import { login , postScenario } from './services.js';
+
 class PageManager {
 	constructor() {
 		this.scenario = [];
 		this.isRecording = false;
 		this.isLoggedIn = false;
+		this.jwt = sha256('');
 		this.handleMessage = this.handleMessage.bind(this);
 		this.startRecording = this.startRecording.bind(this);
 		this.startRecording = this.startRecording.bind(this);
@@ -18,20 +22,44 @@ class PageManager {
 
 	handleMessage(msg, sender, sendResponse) {
 		switch (msg.kind) {
+		case 'login':
+			login(msg.credential)
+				.then(response => {
+					console.log(JSON.stringify(response));
+					if (response.logged === false) {
+						this.isLoggedIn = false;
+					} else {
+						this.isLoggedIn = true;
+						this.jwt = response.jwt;
+					}
+					let responseToMsg = {isLoggedIn : this.isLoggedIn};
+					console.log(JSON.stringify(responseToMsg));
+					sendResponse(responseToMsg);
+				})
+				.catch((ex) => {
+					//console.log(ex);
+					sendResponse(false);
+				});
+			return true;
+		case 'logout':
+			this.isLoggedIn = false;
+			this.jwt = sha256('');
+			break;
 		case 'start':
 			this.startRecording();
 			break;
 		case 'publish':
-			sendResponse(this.getRecordedScenarioAndStop());
-			break;
+			var recordedScenario = this.getRecordedScenarioAndStop();
+			postScenario(recordedScenario, this.jwt)
+				.then( response => {
+					sendResponse(response);
+				})
+				.catch( ex => {
+					sendResponse(ex);
+				});
+			return true;
 		case 'reinit':
 			this.reinitRecording();
-			break;
-		case 'nowIsLogin':
-			this.isLoggedIn = true;
-			break;
-		case 'nowIsLogout':
-			this.isLoggedIn = false;
 			break;
 		case 'getState':
 			sendResponse({
@@ -79,6 +107,7 @@ class PageManager {
 	}
 
 	webNavigationCommitted({transitionType, url}) {
+		console.log('webNavigationCommitted');
 		chrome.tabs.query({active: true, currentWindow: true}, activeTabs => {
 			if (transitionType === 'reload' || transitionType === 'start_page') {
 				if (activeTabs.length && activeTabs.length > 0) {
@@ -90,9 +119,11 @@ class PageManager {
 	}
 
 	webNavigationCompleted({frameId}) {
+		console.log('webNavigationCompleted');
 		chrome.tabs.query({active: true}, activeTabs => {
 			if (frameId === 0) {
 				if (activeTabs.length && activeTabs.length > 0) {
+					console.log('executeScript');
 					chrome.tabs.executeScript(activeTabs[0].id , {file:'listener.bundle.js'});
 				}
 			}

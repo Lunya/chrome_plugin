@@ -5,38 +5,30 @@ export function login(credentials) {
 		const url = `${BASE_URL}/api/login`;
 		axios.post(url, credentials  )
 			.then( response => {
-				if (response.status === 401) {
-					console.log('incorrect');
-					resolve(false);
-				} else {
+				if (response.status === 200 ) {
 					console.log('correct');
-					resolve(true);
+					resolve({
+						logged : true,
+						jwt: response.data.jwt
+					});
+				} else {
+					console.log('incorrect');
+					resolve({
+						logged : false
+					});
 				}
 			})
-			.catch(() => {
+			.catch((ex) => {
 				console.log('incorrect');
-				reject(false);
+				reject(ex);
 			});
 	});
 }
 
-export function logout() {
-	return new Promise( (resolve, reject) => {
-		const url = `${BASE_URL}/api/logout`;
-		axios.get(url)
-			.then(response => {
-				resolve(response);
-			})
-			.catch(err => {
-				reject(err);
-			});
-	});
-}
-
-export function postScenario(scenario) {
+export function postScenario(scenario, jwt) {
 	return new Promise((resolve, reject) => {
 		const url = `${BASE_URL}/api/scenario`;
-		axios.post(url, scenario)
+		axios.post(url, scenario, {headers: {'Authorization': `Bearer ${jwt}`}})
 			.then( response => {
 				resolve(response.data);
 			})

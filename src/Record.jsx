@@ -1,5 +1,4 @@
 import React from 'react';
-import { postScenario, logout } from './services.js';
 import { Redirect } from 'react-router-dom';
 import { ButtonToolbar, Button } from 'react-bootstrap';
 
@@ -34,7 +33,7 @@ export default class Record extends React.Component {
 	clickStart(event) {
 		event.preventDefault();
 		chrome.runtime.sendMessage({kind:'start'});
-		this.setState( (prevState) => {
+		this.setState( () => {
 			return {
 				start: true ,
 				publish: false ,
@@ -47,22 +46,16 @@ export default class Record extends React.Component {
 	clickPublish(event) {
 		event.preventDefault();
 		console.log('start publish');
-		chrome.runtime.sendMessage({kind:'publish'}, recordedScenario => {
+		chrome.runtime.sendMessage({kind:'publish'}, () => {
 			console.log('publish ok');
-			postScenario(recordedScenario)
-				.then(() => {
-					this.setState( (prevState) => {
-						return {
-							start: false ,
-							publish: true ,
-							reinit: true ,
-							redirect: false
-						};
-					});
-				})
-				.catch( err => {
-					console.log(err);
-				});
+			this.setState( () => {
+				return {
+					start: false ,
+					publish: true ,
+					reinit: true ,
+					redirect: false
+				};
+			});
 		});
 	}
 
@@ -81,22 +74,15 @@ export default class Record extends React.Component {
 
 	clickLogout(event) {
 		event.preventDefault();
-		logout()
-			.then( response => {
-				console.log(response);
-				chrome.runtime.sendMessage({kind:'nowIsLogout'}),
-				this.setState( (prevState) => {
-					return {
-						start: prevState.start ,
-						publish: prevState.publish ,
-						reinit: prevState.reinit ,
-						redirect : true
-					};
-				});
-			})
-			.catch(err => {
-				console.error(err);
-			});
+		chrome.runtime.sendMessage({kind:'logout'});
+		this.setState( (prevState) => {
+			return {
+				start: prevState.start ,
+				publish: prevState.publish ,
+				reinit: prevState.reinit ,
+				redirect : true
+			};
+		});
 	}
 
 	render() {

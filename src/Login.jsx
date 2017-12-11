@@ -1,7 +1,7 @@
 import React from 'react';
-import { login } from './services.js';
 import { Redirect } from 'react-router-dom';
 import { Form, Col, FormGroup, FormControl, ControlLabel, Button, Alert } from 'react-bootstrap';
+import { sha256 } from 'js-sha256';
 
 export default class Login extends React.Component {
 
@@ -10,7 +10,7 @@ export default class Login extends React.Component {
 		this.state = {
 			credential : {
 				username : '',
-				password :''
+				password :sha256('')
 			},
 			message: null,
 			isLoggedIn : false
@@ -38,29 +38,29 @@ export default class Login extends React.Component {
 		button.insertBefore(span, button.firstChild);
 		var credential = {
 			username: document.getElementById('username').value,
-			password: document.getElementById('password').value
+			password: sha256(document.getElementById('password').value)
 		};
-		login(credential).then(() => {
-			chrome.runtime.sendMessage({ kind: 'nowIsLogin' });
-			this.setState(() => {
-				return {
-					credential: credential,
-					isLoggedIn : true,
-					message : null
-				};
-			});
-			button.removeChild(span);
-		}).catch(err => {
-			console.log(err);
-			this.setState(() => {
-				return {
-					credential: credential,
-					isLoggedIn : false,
-					message : 'Invalid username or password.'
-				};
-			});
-			chrome.runtime.sendMessage({ kind: 'nowIsLogout' });
-			button.removeChild(span);
+		chrome.runtime.sendMessage({ kind: 'login' , credential: credential }, (response) => {
+			console.log(`isLogged:${response.isLoggedIn}`);
+			if (response.isLoggedIn) {
+				this.setState(() => {
+					return {
+						credential: credential,
+						isLoggedIn : true,
+						message : null
+					};
+				});
+				button.removeChild(span);
+			} else {
+				this.setState(() => {
+					return {
+						credential: credential,
+						isLoggedIn : false,
+						message : 'Invalid username or password.'
+					};
+				});
+				button.removeChild(span);
+			}
 		});
 	}
 
