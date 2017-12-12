@@ -17,6 +17,11 @@ class PageManager {
 		this.webNavigationCommitted = this.webNavigationCommitted.bind(this);
 		this.webNavigationCompleted = this.webNavigationCompleted.bind(this);
 		this.webNavigationCreatedNavigationTarget = this.webNavigationCreatedNavigationTarget.bind(this);
+
+
+		chrome.webNavigation.onCommitted.addListener(this.webNavigationCommitted);
+		chrome.webNavigation.onCompleted.addListener(this.webNavigationCompleted);
+		chrome.webNavigation.onCreatedNavigationTarget.addListener(this.webNavigationCreatedNavigationTarget);
 	}
 
 	start() {
@@ -82,10 +87,6 @@ class PageManager {
 		this.scenario = [];
 		this.isRecording = true;
 
-		chrome.webNavigation.onCommitted.addListener(this.webNavigationCommitted);
-		chrome.webNavigation.onCompleted.addListener(this.webNavigationCompleted);
-		chrome.webNavigation.onCreatedNavigationTarget.addListener(this.webNavigationCreatedNavigationTarget);
-
 		chrome.windows.getCurrent({populate:true}, window => {
 			this.window = window;
 			this.tab = window.tabs.find( tab => {return tab.active;});
@@ -97,8 +98,6 @@ class PageManager {
 
 	getRecordedScenarioAndStop() {
 		this.isRecording = false;
-		chrome.webNavigation.onCommitted.removeListener(this.webNavigationCommitted);
-		chrome.webNavigation.onCompleted.removeListener(this.webNavigationCompleted);
 		return   {
 			actions : this.scenario,
 			wait : 1000
