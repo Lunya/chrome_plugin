@@ -26,6 +26,7 @@ module.exports =  {
 	plugins: [
 		new CopyPlugin([
 			{ from: './src/manifest.json', to: 'manifest.json' },
+			{ from: './src/favicon.js', to: 'favicon.js' },
 			{ from: './src/icon.png', to: 'icon.png' },
 			{ from: './src/popup.html', to: 'popup.html' }
 		]),

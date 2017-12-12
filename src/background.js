@@ -6,6 +6,8 @@ class PageManager {
 		this.scenario = [];
 		this.isRecording = false;
 		this.isLoggedIn = false;
+		this.windowId = 0;
+		this.tabId = 0;
 		this.jwt = sha256('');
 		this.handleMessage = this.handleMessage.bind(this);
 		this.startRecording = this.startRecording.bind(this);
@@ -14,6 +16,7 @@ class PageManager {
 		this.reinitRecording = this.reinitRecording.bind(this);
 		this.webNavigationCommitted = this.webNavigationCommitted.bind(this);
 		this.webNavigationCompleted = this.webNavigationCompleted.bind(this);
+		this.webNavigationCreatedNavigationTarget = this.webNavigationCreatedNavigationTarget.bind(this);
 	}
 
 	start() {
@@ -78,14 +81,17 @@ class PageManager {
 		console.log('startRecording');
 		this.scenario = [];
 		this.isRecording = true;
+
 		chrome.webNavigation.onCommitted.addListener(this.webNavigationCommitted);
 		chrome.webNavigation.onCompleted.addListener(this.webNavigationCompleted);
+		chrome.webNavigation.onCreatedNavigationTarget.addListener(this.webNavigationCreatedNavigationTarget);
 
-		chrome.tabs.query({active: true, currentWindow: true}, activeTabs => {
-			if (activeTabs.length && activeTabs.length > 0) {
-				console.log('reload');
-				chrome.tabs.reload(activeTabs[0].id);
-			}
+		chrome.windows.getCurrent({populate:true}, window => {
+			this.window = window;
+			this.tab = window.tabs.find( tab => {return tab.active;});
+			console.log(`window:${this.window.id}, tab:${this.tab.id}`);
+			console.log('reload');
+			chrome.tabs.reload(this.tab.id);
 		});
 	}
 
@@ -101,34 +107,33 @@ class PageManager {
 
 	reinitRecording() {
 		this.isRecording = false;
-		chrome.webNavigation.onCommitted.removeListener(this.webNavigationCommitted);
-		chrome.webNavigation.onCompleted.removeListener(this.webNavigationCompleted);
 		this.scenario = [];
 	}
 
 	webNavigationCommitted({transitionType, url}) {
 		console.log('webNavigationCommitted');
-		chrome.tabs.query({active: true, currentWindow: true}, activeTabs => {
-			if (transitionType === 'reload' || transitionType === 'start_page') {
-				if (activeTabs.length && activeTabs.length > 0) {
-					pageManager.scenario.push({type:'GotoAction', url:url});
-					console.log('goto added');
-				}
-			}
-		});
+		if (transitionType === 'reload' || transitionType === 'start_page') {
+			pageManager.scenario.push({type:'GotoAction', url:url});
+			console.log('goto added');
+		}
 	}
 
-	webNavigationCompleted({frameId}) {
-		console.log('webNavigationCompleted');
-		chrome.tabs.query({active: true}, activeTabs => {
+	webNavigationCompleted({tabId, frameId}) {
+		console.log(`webNavigationCompleted: tabId=${tabId}, frameId=${frameId}`);
+		console.log(`window:${this.window.id}, tab:${this.tab.id}`);
+		if (tabId === this.tab.id) {
 			if (frameId === 0) {
-				if (activeTabs.length && activeTabs.length > 0) {
-					console.log('executeScript');
-					chrome.tabs.executeScript(activeTabs[0].id , {file:'listener.bundle.js'});
-				}
+				console.log('executeScript');
+				chrome.tabs.executeScript(this.tab.id, {file:'listener.bundle.js'});
+				chrome.tabs.executeScript(this.tab.id, {file:'favicon.js'});
 			}
-		});
+		}
 	}
+
+	webNavigationCreatedNavigationTarget({sourceTabId, tabId}) {
+		console.log(`createdNavigationTarget from ${sourceTabId} to ${tabId}`);
+	}
+
 }
 
 var pageManager = new PageManager();
