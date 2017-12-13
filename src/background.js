@@ -100,7 +100,7 @@ class PageManager {
 		this.isRecording = false;
 		return   {
 			actions : this.scenario,
-			wait : 1000
+			wait : 5000
 		};
 	}
 
