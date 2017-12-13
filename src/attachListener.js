@@ -134,7 +134,7 @@ function computeSelectorOptimal(el) {
 }
 
 function computeCSSSelectorGenerator(el) {
-	let custom_options = {selectors: ['tag', 'id', 'nthchild', 'attribute']};
+	let custom_options = {selectors: ['tag', 'id', 'attribute']};
 	let cssSelectorGenerator = new CssSelectorGenerator(custom_options);
 	return cssSelectorGenerator.getSelector(el);
 }
