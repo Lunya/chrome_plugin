@@ -77,7 +77,7 @@ class PageManager {
 			break;
 		case 'action' :
 			console.log(`action added : ${msg.action.type}`);
-			this.scenario.push(msg.action);
+			this.addActionToScenario(msg.action);
 			break;
 		}
 	}
@@ -131,6 +131,18 @@ class PageManager {
 
 	webNavigationCreatedNavigationTarget({sourceTabId, tabId}) {
 		console.log(`createdNavigationTarget from ${sourceTabId} to ${tabId}`);
+	}
+
+	addActionToScenario(action) {
+		if (this.scenario.length > 0) {
+			let lastAction = this.scenario[this.scenario.length - 1];
+			if (lastAction.type === 'TypeAction' && action.type === 'TypeAction') {
+				if (lastAction.selector.watId === action.selector.watId) {
+					this.scenario.pop();	
+				}
+			}
+		}
+		this.scenario.push(action);
 	}
 
 }
