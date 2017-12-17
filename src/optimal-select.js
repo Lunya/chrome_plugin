@@ -1038,7 +1038,6 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 function getSingleSelector(element) {
   var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
-  console.log('element: ' + JSON.stringify(element) + ', name: ' + element.nodeName + ', parent: ' + element.parentElement);
   // 3 refers to - Node.TEXT_NODE type
   if (element.nodeType === 3) {
     element = element.parentNode;
