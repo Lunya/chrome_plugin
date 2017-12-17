@@ -1,11 +1,11 @@
-import { select } from 'optimal-select';
+import { select } from './optimal-select.js';
 import CssSelectorGenerator from 'css-selector-generator';
 
 function attach() {
 	console.log('attach');
 	const inputs = document.querySelectorAll('input, textarea');
 	for (let i = 0; i < inputs.length; i++) {
-		inputs[i].addEventListener('input', handleInput);
+		inputs[i].addEventListener('input', handleInput, true);
 	}
 
 	const observer = new MutationObserver(handleMutation);
@@ -21,18 +21,18 @@ function attach() {
 
 	const selects = document.querySelectorAll('select');
 	for (let i = 0; i < selects.length; i++) {
-		selects[i].addEventListener('change', handleChange); 
+		selects[i].addEventListener('change', handleChange,true); 
 	}
 
-	document.body.addEventListener('click', handleClick);
+	document.body.addEventListener('click', handleClick,true);
 }
 
 function handleMutation(mutations) {
 	mutations.forEach(mutationRecord => {
 		if (mutationRecord.type === 'childList') {
-			var addedNodes = mutationRecord.addedNodes;
-			for (var index = 0; index < addedNodes.length; index++) {
-				var addedNode = addedNodes[index];
+			let addedNodes = mutationRecord.addedNodes;
+			for (let index = 0; index < addedNodes.length; index++) {
+				let addedNode = addedNodes[index];
 				if (addedNode.tagName) {
 					const inputs = addedNode.querySelectorAll('input, textarea');
 					for (let i = 0; i < inputs.length; i++) {
@@ -120,12 +120,12 @@ function computeSelectorOptimal(el) {
 		priority: ['id','class','href','src'],
 		ignore: {
 			class(className) {
-				//console.log(`className:${JSON.stringify(className)}`);
+				console.log(`className:${JSON.stringify(className)}`);
 				return (className==='class') || (className.indexOf('ng-') !== -1);
 			},
 			attribute (name, value, defaultPredicate) {
 				// exclude HTML5 data attributes
-				//console.log(`name:${JSON.stringify(name)}, value:${JSON.stringify(value)}, defaultPredicate:${JSON.stringify(defaultPredicate)}`);
+				console.log(`name:${JSON.stringify(name)}, value:${JSON.stringify(value)}, defaultPredicate:${JSON.stringify(defaultPredicate)}`);
 				return false;
 				//return (/data-*/).test(name) || defaultPredicate(name, value);
 			}
@@ -134,7 +134,7 @@ function computeSelectorOptimal(el) {
 }
 
 function computeCSSSelectorGenerator(el) {
-	let custom_options = {selectors: ['tag', 'id', 'attribute']};
+	let custom_options = {selectors: ['tag', 'id', 'class', 'attribute']};
 	let cssSelectorGenerator = new CssSelectorGenerator(custom_options);
 	return cssSelectorGenerator.getSelector(el);
 }
