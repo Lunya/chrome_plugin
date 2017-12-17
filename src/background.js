@@ -33,7 +33,6 @@ class PageManager {
 		case 'login':
 			login(msg.credential)
 				.then(response => {
-					console.log(JSON.stringify(response));
 					if (response.logged === false) {
 						this.isLoggedIn = false;
 					} else {
@@ -41,7 +40,6 @@ class PageManager {
 						this.jwt = response.jwt;
 					}
 					let responseToMsg = {isLoggedIn : this.isLoggedIn};
-					console.log(JSON.stringify(responseToMsg));
 					sendResponse(responseToMsg);
 				})
 				.catch((ex) => {
@@ -76,22 +74,18 @@ class PageManager {
 			});
 			break;
 		case 'action' :
-			console.log(`action added : ${msg.action.type}`);
 			this.addActionToScenario(msg.action);
 			break;
 		}
 	}
 
 	startRecording() {
-		console.log('startRecording');
 		this.scenario = [];
 		this.isRecording = true;
 
 		chrome.windows.getCurrent({populate:true}, window => {
 			this.window = window;
 			this.tab = window.tabs.find( tab => {return tab.active;});
-			console.log(`window:${this.window.id}, tab:${this.tab.id}`);
-			console.log('reload');
 			chrome.tabs.reload(this.tab.id);
 		});
 	}
@@ -100,7 +94,7 @@ class PageManager {
 		this.isRecording = false;
 		return   {
 			actions : this.scenario,
-			wait : 5000
+			wait : 8000
 		};
 	}
 
@@ -110,19 +104,14 @@ class PageManager {
 	}
 
 	webNavigationCommitted({transitionType, url}) {
-		console.log('webNavigationCommitted');
 		if (transitionType === 'reload' || transitionType === 'start_page') {
 			pageManager.scenario.push({type:'GotoAction', url:url});
-			console.log('goto added');
 		}
 	}
 
 	webNavigationCompleted({tabId, frameId}) {
-		console.log(`webNavigationCompleted: tabId=${tabId}, frameId=${frameId}`);
-		console.log(`window:${this.window.id}, tab:${this.tab.id}`);
 		if (tabId === this.tab.id) {
 			if (frameId === 0) {
-				console.log('executeScript');
 				chrome.tabs.executeScript(this.tab.id, {file:'listener.bundle.js'});
 				chrome.tabs.executeScript(this.tab.id, {file:'favicon.js'});
 			}
@@ -130,7 +119,8 @@ class PageManager {
 	}
 
 	webNavigationCreatedNavigationTarget({sourceTabId, tabId}) {
-		console.log(`createdNavigationTarget from ${sourceTabId} to ${tabId}`);
+		//console.log(`createdNavigationTarget from ${sourceTabId} to ${tabId}`);
+		//TODO: warn the user that WAT is not listening
 	}
 
 	addActionToScenario(action) {

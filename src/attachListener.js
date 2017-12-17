@@ -1,5 +1,4 @@
 import { select } from './optimal-select.js';
-import CssSelectorGenerator from 'css-selector-generator';
 
 function attach() {
 	console.log('attach');
@@ -73,45 +72,7 @@ function handleChange(e) {
 }
 
 function computeSelector(el) {
-	return {
-		watId: computeSelectorWithID(el),
-		watPath: computeSelectorWithPath(el),
-		optimal: computeSelectorOptimal(el),
-		css: computeCSSSelectorGenerator(el)
-	};
-}
-
-function computeSelectorWithID(el) {
-	var names = [];
-	while (el.parentNode) {
-		if (el.id) {
-			names.unshift(`#${el.id}`);
-			break;
-		} else {
-			if (el == el.ownerDocument.documentElement)
-				names.unshift(el.tagName);
-			else {
-				for (var c = 1, e = el; e.previousElementSibling; e = e.previousElementSibling, c++);
-				names.unshift(`${el.tagName}:nth-child(${c})`);
-			}
-			el = el.parentNode;
-		}
-	}
-	return names.join(' > ');
-}
-
-function computeSelectorWithPath(el) {
-	var names = [];
-	while (el.parentNode) {
-		if (el == el.ownerDocument.documentElement)
-			names.unshift(el.tagName);
-		else {
-			for (var c = 1, e = el; e.previousElementSibling; e = e.previousElementSibling, c++);
-			names.unshift(`${el.tagName}:nth-child(${c})`);
-		}
-		el = el.parentNode;
-	}
-	return names.join(' > ');
+	return computeSelectorOptimal(el);
 }
 
 function computeSelectorOptimal(el) {
@@ -120,23 +81,11 @@ function computeSelectorOptimal(el) {
 		priority: ['id','class','href','src'],
 		ignore: {
 			class(className) {
-				console.log(`className:${JSON.stringify(className)}`);
 				return (className==='class') || (className.indexOf('ng-') !== -1);
-			},
-			attribute (name, value, defaultPredicate) {
-				// exclude HTML5 data attributes
-				console.log(`name:${JSON.stringify(name)}, value:${JSON.stringify(value)}, defaultPredicate:${JSON.stringify(defaultPredicate)}`);
-				return false;
-				//return (/data-*/).test(name) || defaultPredicate(name, value);
 			}
 		}
 	});
 }
 
-function computeCSSSelectorGenerator(el) {
-	let custom_options = {selectors: ['tag', 'id', 'class', 'attribute']};
-	let cssSelectorGenerator = new CssSelectorGenerator(custom_options);
-	return cssSelectorGenerator.getSelector(el);
-}
 
 attach();
