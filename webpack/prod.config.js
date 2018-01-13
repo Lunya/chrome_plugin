@@ -6,7 +6,7 @@ module.exports = merge(baseConfig, {
 
 	plugins: [
 		new webpack.DefinePlugin({
-			BASE_URL : JSON.stringify('http://37.59.110.250')
+			BASE_URL : JSON.stringify('https://wat.promyze.com')
 		}),
 		new webpack.optimize.UglifyJsPlugin()
 	]

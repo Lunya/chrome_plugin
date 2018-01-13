@@ -1,6 +1,6 @@
 import React from 'react';
 import { Redirect } from 'react-router-dom';
-import { ButtonToolbar, Button } from 'react-bootstrap';
+import { ButtonToolbar, Button, Row } from 'react-bootstrap';
 
 export default class Record extends React.Component {
 	constructor(props) {
@@ -9,12 +9,15 @@ export default class Record extends React.Component {
 			start: false,
 			publish: true,
 			reinit: true,
-			redirect: false
+			redirect: false,
+			css: false,
+			selector: ''
 		};
 		this.clickStart = this.clickStart.bind(this);
 		this.clickPublish = this.clickPublish.bind(this);
 		this.clickReinit = this.clickReinit.bind(this);
 		this.clickLogout = this.clickLogout.bind(this);
+		this.clickCSSSelector = this.clickCSSSelector.bind(this);
 	}
 
 	componentDidMount() {
@@ -38,7 +41,8 @@ export default class Record extends React.Component {
 				start: true ,
 				publish: false ,
 				reinit: false ,
-				redirect: false
+				redirect: false , 
+				css : false,
 			};
 		});
 	}
@@ -62,7 +66,7 @@ export default class Record extends React.Component {
 	clickReinit(event) {
 		event.preventDefault();
 		chrome.runtime.sendMessage({kind:'reinit'});
-		this.setState( (prevState) => {
+		this.setState( () => {
 			return {
 				start: false ,
 				publish: true ,
@@ -75,14 +79,22 @@ export default class Record extends React.Component {
 	clickLogout(event) {
 		event.preventDefault();
 		chrome.runtime.sendMessage({kind:'logout'});
-		this.setState( (prevState) => {
+		this.setState( () => {
 			return {
-				start: prevState.start ,
-				publish: prevState.publish ,
-				reinit: prevState.reinit ,
 				redirect : true
 			};
 		});
+	}
+
+	clickCSSSelector(event) {
+		event.preventDefault();
+		chrome.runtime.sendMessage({kind:'css'});
+		this.setState((prevState) => {
+			return {
+				css: true
+			};
+		});
+
 	}
 
 	render() {
@@ -102,12 +114,29 @@ export default class Record extends React.Component {
 				);
 			}
 			else {
-				return (
-					<ButtonToolbar>
-						<Button bsStyle="primary" onClick={this.clickStart}>Record</Button>
-						<Button bsStyle="danger" onClick={this.clickLogout}>Logout</Button>
-					</ButtonToolbar>
-				);
+				if (this.state.css) {
+					return (
+						<ButtonToolbar>
+							<Button bsStyle="primary" onClick={this.clickStart}>Record</Button>
+							<Button bsStyle="danger" onClick={this.clickLogout}>Logout</Button>
+							<Button bsStyle="success" onClick={this.clickCSSSelector}>CSS Selector</Button>
+						</ButtonToolbar>
+					);
+				} else {
+					return (
+						<Row>
+							<ButtonToolbar>
+								<Button bsStyle="primary" onClick={this.clickStart}>Record</Button>
+								<Button bsStyle="danger" onClick={this.clickLogout}>Logout</Button>
+								<Button bsStyle="success" onClick={this.clickCSSSelector}>CSS Selector</Button>
+							</ButtonToolbar>
+						</Row>
+						<Row>
+							<span>{this.state.selector}</span>
+						</Row>
+					);
+				
+				}
 			}
 		}
 	}
