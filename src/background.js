@@ -17,13 +17,10 @@ class PageManager {
 		this.reinitRecording = this.reinitRecording.bind(this);
 		this.webNavigationCommitted = this.webNavigationCommitted.bind(this);
 		this.webNavigationCompleted = this.webNavigationCompleted.bind(this);
-		this.webNavigationCreatedNavigationTarget = this.webNavigationCreatedNavigationTarget.bind(this);
-		this.startCSS = this.startCSS.bind(this);
 
 
 		chrome.webNavigation.onCommitted.addListener(this.webNavigationCommitted);
 		chrome.webNavigation.onCompleted.addListener(this.webNavigationCompleted);
-		chrome.webNavigation.onCreatedNavigationTarget.addListener(this.webNavigationCreatedNavigationTarget);
 	}
 
 	start() {
@@ -79,9 +76,6 @@ class PageManager {
 			if (this.isRecording) this.addActionToScenario(msg.action);
 			if (this.isListeningCSS) this.showCSSSelector(msg.action.selector);
 			break;
-		case 'css':
-			this.startCSS();
-			break;
 		}
 	}
 
@@ -94,16 +88,6 @@ class PageManager {
 			this.tab = window.tabs.find( tab => {return tab.active;});
 			chrome.tabs.reload(this.tab.id);
 		});
-	}
-
-	startCSS() {
-		this.isListeningCSS = true;
-		chrome.windows.getCurrent({populate:true}, window => {
-			this.window = window;
-			this.tab = window.tabs.find( tab => {return tab.active;});
-			chrome.tabs.executeScript(this.tab.id, {file:'listener.bundle.js'});
-		});
-
 	}
 
 	getRecordedScenarioAndStop() {
@@ -134,11 +118,6 @@ class PageManager {
 		}
 	}
 
-	webNavigationCreatedNavigationTarget({sourceTabId, tabId}) {
-		//console.log(`createdNavigationTarget from ${sourceTabId} to ${tabId}`);
-		//TODO: warn the user that WAT is not listening
-	}
-
 	addActionToScenario(action) {
 		if (this.scenario.length > 0) {
 			let lastAction = this.scenario[this.scenario.length - 1];
@@ -150,11 +129,6 @@ class PageManager {
 		}
 		this.scenario.push(action);
 	}
-
-	showCSSSelector(selector) {
-		
-	}
-
 }
 
 var pageManager = new PageManager();
