@@ -1,15 +1,12 @@
-import { sha256 } from 'js-sha256';
 import { login , postScenario } from './services.js';
 
 class PageManager {
 	constructor() {
 		this.scenario = [];
 		this.isRecording = false;
-		this.isListeningCSS = false;
 		this.isLoggedIn = false;
 		this.windowId = 0;
 		this.tabId = 0;
-		this.jwt = sha256('');
 		this.handleMessage = this.handleMessage.bind(this);
 		this.startRecording = this.startRecording.bind(this);
 		this.startRecording = this.startRecording.bind(this);
@@ -48,7 +45,7 @@ class PageManager {
 			return true;
 		case 'logout':
 			this.isLoggedIn = false;
-			this.jwt = sha256('');
+			this.jwt = undefined;
 			break;
 		case 'start':
 			this.startRecording();
@@ -74,7 +71,6 @@ class PageManager {
 			break;
 		case 'action' :
 			if (this.isRecording) this.addActionToScenario(msg.action);
-			if (this.isListeningCSS) this.showCSSSelector(msg.action.selector);
 			break;
 		}
 	}
@@ -110,7 +106,7 @@ class PageManager {
 	}
 
 	webNavigationCompleted({tabId, frameId}) {
-		if (tabId === this.tab.id) {
+		if (this.tab && (this.tab.id === tabId  ))  {
 			if (frameId === 0) {
 				chrome.tabs.executeScript(this.tab.id, {file:'listener.bundle.js'});
 				chrome.tabs.executeScript(this.tab.id, {file:'favicon.js'});

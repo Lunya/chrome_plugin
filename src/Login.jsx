@@ -1,7 +1,6 @@
 import React from 'react';
 import { Redirect } from 'react-router-dom';
 import { Form, Col, FormGroup, FormControl, ControlLabel, Button, Alert } from 'react-bootstrap';
-import { sha256 } from 'js-sha256';
 
 export default class Login extends React.Component {
 
@@ -10,7 +9,7 @@ export default class Login extends React.Component {
 		this.state = {
 			credential : {
 				username : '',
-				password :sha256('')
+				password : ''
 			},
 			message: null,
 			isLoggedIn : false
@@ -38,7 +37,7 @@ export default class Login extends React.Component {
 		button.insertBefore(span, button.firstChild);
 		var credential = {
 			username: document.getElementById('username').value,
-			password: sha256(document.getElementById('password').value)
+			password: document.getElementById('password').value
 		};
 		chrome.runtime.sendMessage({ kind: 'login' , credential: credential }, (response) => {
 			console.log(`isLogged:${response.isLoggedIn}`);
