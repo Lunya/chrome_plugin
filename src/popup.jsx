@@ -5,6 +5,7 @@ import { BrowserRouter as Router, Route, browserHistory } from 'react-router-dom
 import Login from './Login.jsx';
 import Logout from './Logout.jsx';
 import Record from './Record.jsx';
+import GitHub from './GitHub.jsx';
 
 // This is a fix for wrong popup size on macos.
 chrome.runtime.getPlatformInfo(info => {
@@ -32,6 +33,7 @@ class PopupPlugin extends React.Component {
 							<Route exact path="/popup.html" component={Login}/>
 							<Route path="/logout" component={Logout}/>
 							<Route path="/record" component={Record}/>
+							<Route path="/github" component={GitHub}/>
 						</Col>
 					</Row>
 				</Grid>

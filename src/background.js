@@ -1,4 +1,4 @@
-import { login , postScenario } from './services.js';
+import { login , getJWTFromGitHubSession, postScenario } from './services.js';
 
 class PageManager {
 	constructor() {
@@ -28,6 +28,23 @@ class PageManager {
 		switch (msg.kind) {
 		case 'login':
 			login(msg.credential)
+				.then(response => {
+					if (response.logged === false) {
+						this.isLoggedIn = false;
+					} else {
+						this.isLoggedIn = true;
+						this.jwt = response.jwt;
+					}
+					let responseToMsg = {isLoggedIn : this.isLoggedIn};
+					sendResponse(responseToMsg);
+				})
+				.catch((ex) => {
+					//console.log(ex);
+					sendResponse(false);
+				});
+			return true;
+		case 'github':
+			getJWTFromGitHubSession()
 				.then(response => {
 					if (response.logged === false) {
 						this.isLoggedIn = false;

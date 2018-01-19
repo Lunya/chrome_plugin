@@ -38,3 +38,25 @@ export function postScenario(scenario, jwt) {
 	});
 }
 
+export function getJWTFromGitHubSession() {
+	return new Promise((resolve, reject) => {
+		const url = `${BASE_URL}/api/github/jwt`;
+		axios.get(url)
+			.then(response => {
+				if (response.status === 401) {
+					resolve({
+						logged : false
+					});
+				} else {
+					resolve({
+						logged : true,
+						jwt: response.data.jwt
+					});
+				}
+			})
+			.catch(err => {
+				reject(err);
+			});
+	});
+}
+
