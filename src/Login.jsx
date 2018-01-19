@@ -89,7 +89,7 @@ export default class Login extends React.Component {
 					<FormGroup>
 						<Col xsOffset={2} xs={10}><Button id="loginButton" bsStyle="primary" type="submit">Login</Button></Col>
 					</FormGroup>
-					<a href="api/github"> Or Log With Your GitHub Account </a>
+					<a href="http://wat.promyze.com/api/github"> Or Log With Your GitHub Account </a>
 				</Form>
 			);
 		}
