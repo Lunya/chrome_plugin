@@ -2,6 +2,13 @@ import React from 'react';
 import { Redirect } from 'react-router-dom';
 import { Form, Col, FormGroup, FormControl, ControlLabel, Button, Alert } from 'react-bootstrap';
 
+let PLUGIN_ID;
+if (process.env.NODE_ENV === 'debug') {
+	PLUGIN_ID = 'mbmagclhdniafnleknagfkhnihgdfipo';
+} else {
+	PLUGIN_ID = 'fopllklfdgccljiagdpeocpdnhlmlakc';
+}
+
 export default class Login extends React.Component {
 
 	constructor(props) {
@@ -15,6 +22,7 @@ export default class Login extends React.Component {
 			isLoggedIn : false
 		};
 		this.handleSubmit = this.handleSubmit.bind(this);
+		this.handleGitHub = this.handleGitHub.bind(this);
 	}
 
 	componentDidMount() {
@@ -63,6 +71,17 @@ export default class Login extends React.Component {
 		});
 	}
 
+	handleGitHub(event) {
+		event.preventDefault();
+		const gitHubOAuthURL = `https://github.com/login/oauth/authorize?response_type=code&redirect_uri=https://${PLUGIN_ID}.chromiumapp.org/github&scope=user:email`;
+		chrome.identity.launchWebAuthFlow(
+			{'url': gitHubOAuthURL, 'interactive': true},
+			function(redirect_url) { /* Extract token from redirect_url */ 
+				console.log(JSON.stringify(redirect_url));
+			}
+		);
+	}
+
 	render() {
 		if (this.state.isLoggedIn) {
 			return <Redirect to="/record"/>;
@@ -89,7 +108,7 @@ export default class Login extends React.Component {
 					<FormGroup>
 						<Col xsOffset={2} xs={10}><Button id="loginButton" bsStyle="primary" type="submit">Login</Button></Col>
 					</FormGroup>
-					<a href="http://wat.promyze.com/api/github"> Or Log With Your GitHub Account </a>
+					<a href="#" onClick={this.handleGitHub}> Or Log With Your GitHub Account </a>
 				</Form>
 			);
 		}

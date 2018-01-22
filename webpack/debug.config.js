@@ -7,7 +7,10 @@ module.exports = merge(baseConfig, {
 
 	plugins: [
 		new webpack.DefinePlugin({
-			BASE_URL : JSON.stringify('http://localhost:8080')
+			BASE_URL : JSON.stringify('http://localhost:8080'),
+			'process.env': {
+				NODE_ENV: JSON.stringify('debug')
+			}
 		})
 	]
 });
