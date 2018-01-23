@@ -2,12 +2,7 @@ import React from 'react';
 import { Redirect } from 'react-router-dom';
 import { Form, Col, FormGroup, FormControl, ControlLabel, Button, Alert } from 'react-bootstrap';
 
-let PLUGIN_ID;
-if (process.env.NODE_ENV === 'debug') {
-	PLUGIN_ID = 'mbmagclhdniafnleknagfkhnihgdfipo';
-} else {
-	PLUGIN_ID = 'fopllklfdgccljiagdpeocpdnhlmlakc';
-}
+const CLIENT_ID = '28bd9c230cad1275362f';
 
 export default class Login extends React.Component {
 
@@ -73,11 +68,30 @@ export default class Login extends React.Component {
 
 	handleGitHub(event) {
 		event.preventDefault();
-		const gitHubOAuthURL = `https://github.com/login/oauth/authorize?response_type=code&redirect_uri=https://${PLUGIN_ID}.chromiumapp.org/github&scope=user:email`;
-		chrome.identity.launchWebAuthFlow(
-			{'url': gitHubOAuthURL, 'interactive': true},
+		const AUTH_URL = 'https://github.com/login/oauth/authorize/?client_id='+CLIENT_ID;
+		chrome.identity.launchWebAuthFlow({'url': AUTH_URL, 'interactive': true},
 			function(redirect_url) { /* Extract token from redirect_url */ 
-				console.log(JSON.stringify(redirect_url));
+				let codeBeginIndex = redirect_url.lastIndexOf('code=') + 5;
+				let code = redirect_url.substring(codeBeginIndex);
+				console.log(code);
+				chrome.runtime.sendMessage({ kind: 'github', code: code}, (response) => {
+					if (response.isLoggedIn) {
+						this.setState(() => {
+							return {
+								isLoggedIn : true,
+								message : null
+							};
+						});
+					} else {
+						this.setState(() => {
+							return {
+								isLoggedIn : false,
+								message : 'Invalid GitHub username or password.'
+							};
+						});
+					}
+
+				});
 			}
 		);
 	}

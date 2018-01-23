@@ -44,7 +44,7 @@ class PageManager {
 				});
 			return true;
 		case 'github':
-			getJWTFromGitHubSession()
+			getJWTFromGitHubSession(msg.code)
 				.then(response => {
 					if (response.logged === false) {
 						this.isLoggedIn = false;

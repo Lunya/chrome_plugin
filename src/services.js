@@ -38,10 +38,10 @@ export function postScenario(scenario, jwt) {
 	});
 }
 
-export function getJWTFromGitHubSession() {
+export function getJWTFromGitHubSession(code) {
 	return new Promise((resolve, reject) => {
-		const url = `${BASE_URL}/api/github/jwt`;
-		axios.get(url)
+		const url = `${BASE_URL}/api/github/plugin`;
+		axios.post(url, {code:code})
 			.then(response => {
 				if (response.status === 401) {
 					resolve({
