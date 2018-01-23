@@ -97,6 +97,13 @@ export default class Login extends React.Component {
 	}
 
 	render() {
+		let gitHub;
+		if (process.env.NODE_ENV === 'debug') {
+			gitHub = <br/>;
+		} else {
+			gitHub = <a href="#" onClick={this.handleGitHub}> Or Log With Your GitHub Account </a>;
+		}
+		
 		if (this.state.isLoggedIn) {
 			return <Redirect to="/record"/>;
 		} else {
@@ -122,7 +129,7 @@ export default class Login extends React.Component {
 					<FormGroup>
 						<Col xsOffset={2} xs={10}><Button id="loginButton" bsStyle="primary" type="submit">Login</Button></Col>
 					</FormGroup>
-					<a href="#" onClick={this.handleGitHub}> Or Log With Your GitHub Account </a>
+					{gitHub}
 				</Form>
 			);
 		}
