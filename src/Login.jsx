@@ -70,7 +70,7 @@ export default class Login extends React.Component {
 		event.preventDefault();
 		const AUTH_URL = 'https://github.com/login/oauth/authorize/?client_id='+CLIENT_ID;
 		chrome.identity.launchWebAuthFlow({'url': AUTH_URL, 'interactive': true},
-			function(redirect_url) { /* Extract token from redirect_url */ 
+			(redirect_url) => { /* Extract token from redirect_url */ 
 				let codeBeginIndex = redirect_url.lastIndexOf('code=') + 5;
 				let code = redirect_url.substring(codeBeginIndex);
 				console.log(code);
